@@ -1,4 +1,3 @@
-// src/pages/Dashboard.tsx
 import React, { useEffect, useState } from 'react';
 import { useNavigate, Outlet } from 'react-router-dom';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -24,7 +23,6 @@ interface UserData {
 }
 
 const Dashboard: React.FC = () => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [userData, setUserData] = useState<UserData | null>(null);
   const navigate = useNavigate();
 
@@ -50,36 +48,20 @@ const Dashboard: React.FC = () => {
             ((userData.height / 100) * (userData.height / 100))
           ).toFixed(1),
         },
-        {
-          icon: Utensils,
-          title: 'Meals/Day',
-          value: userData.mealsDaily,
-        },
-        {
-          icon: Timer,
-          title: 'Activity',
-          value: userData.exercise,
-        },
-        {
-          icon: Pill,
-          title: 'Liquid Intake',
-          value: userData.liquidIntake,
-        },
+        { icon: Utensils, title: 'Meals/Day', value: userData.mealsDaily },
+        { icon: Timer, title: 'Activity', value: userData.exercise },
+        { icon: Pill, title: 'Liquid Intake', value: userData.liquidIntake },
       ]
     : [];
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      <Sidebar
-        isOpen={isSidebarOpen}
-        toggle={() => setIsSidebarOpen((o) => !o)}
-      />
-
-      <div className="flex-1 lg:ml-64 p-6 overflow-auto">
+      <Sidebar />
+      <div className="flex-1 ml-64 p-6 overflow-auto">
         <h1 className="text-2xl font-bold mb-4">
           Welcome back, {userData?.ime || 'User'}!
         </h1>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {healthMetrics.map((m, i) => (
             <div
               key={i}
@@ -91,8 +73,6 @@ const Dashboard: React.FC = () => {
             </div>
           ))}
         </div>
-
-        {/* Nested routes content */}
         <Outlet />
       </div>
     </div>

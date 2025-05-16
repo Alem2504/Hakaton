@@ -8,8 +8,6 @@ import {
   Pill,
   PlayCircle,
   Settings,
-  ChevronLeft,
-  ChevronRight,
 } from 'lucide-react';
 
 interface MenuItem {
@@ -28,34 +26,21 @@ const menuItems: MenuItem[] = [
   { label: 'Postavke', route: '/settings', icon: Settings },
 ];
 
-type SidebarProps = {
-  isOpen: boolean;
-  toggle: () => void;
-};
-
-const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle }) => (
-  <div
-    className={`h-screen bg-white shadow-lg p-4 transform fixed lg:relative lg:translate-x-0 z-30 w-64 transition-transform duration-200 ease-in-out ${
-      isOpen ? 'translate-x-0' : '-translate-x-full'
-    }`}
-  >
-    <button onClick={toggle} className="mb-6 focus:outline-none">
-      {isOpen ? <ChevronLeft size={24} /> : <ChevronRight size={24} />}
-    </button>
-
-    <nav className="flex flex-col gap-2">
+const Sidebar: React.FC = () => (
+  <div className="h-screen bg-white shadow-lg p-4 w-64 fixed top-0 left-0 border-r border-gray-200">
+    <nav className="flex flex-col gap-2 mt-4">
       {menuItems.map(({ label, route, icon: Icon }, idx) => (
         <NavLink
           key={idx}
           to={route}
           className={({ isActive }) =>
             `flex items-center gap-3 px-4 py-2 text-sm rounded hover:bg-gray-100 transition-colors ${
-              isActive ? 'bg-gray-200 font-medium' : 'text-gray-700'
+              isActive ? 'bg-gray-200 font-medium text-gray-900' : 'text-gray-700'
             }`
           }
         >
           <Icon size={20} />
-          {isOpen && <span>{label}</span>}
+          <span>{label}</span>
         </NavLink>
       ))}
     </nav>
