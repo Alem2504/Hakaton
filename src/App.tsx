@@ -17,6 +17,14 @@ import ObesityForm from "./components/ObesityForm.tsx";
 import Profile from "./components/Profile.tsx";
 import DoctorDashboard from "./components/DoctorDashboard.tsx";
 import UserProfile from "./components/UserProfile.tsx";
+import UserTherapies from "./components/UserTherapis.tsx";
+import Appointments from "./components/Appointments.tsx";
+import CreateApp from "./components/CreateApp.tsx";
+import AiPredictionPage from "./components/AiPredictionPage.tsx";
+import Graph from "./components/Graph.tsx";
+import Patients from "./components/Patients.tsx";
+import Nalaz from "./components/Nalaz.tsx";
+import NalazView from "./components/nalaz-view.tsx";
 
 // For implementing animation on scroll
 const observeElements = () => {
@@ -60,8 +68,18 @@ function App() {
         <Route path="/doctor-dashboard" element={<DoctorDashboard />} />
         <Route path="/profile-view" element={<Profile />} />
         <Route path="/profile-view/:id" element={<UserProfile />} />
+        <Route path="/graph" element={<Graph />} />
+        <Route path="/patients" element={<Patients />} />
+        <Route path="/nalaz/:id" element={<Nalaz />} />
+        <Route path="/nalazi" element={<NalazView />} />
+
+        <Route path="/therapis" element={<UserTherapies />} />
         <Route path="/health-form" element={<HealthForm />} />
+        <Route path="/appointments" element={<Appointments />} />
+         <Route path="/createapp" element={<CreateApp />} />
          <Route path="/prediction" element={<ObesityForm />} />
+        <Route path="/ai" element={<AiPredictionPage />} />
+
         <Route path="/edit-health-form" element={<EditHealthForm />}/>
         <Route path="health-data" element={<HealthData />} />
           <Route path="/dashboard" element={<Dashboard />} />

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../firebase/firebase.config';
-import Sidebar from '../components/Sidebar';
+import Sidebar from './NavbarD';
 
 interface UserData {
   ime?: string;
@@ -35,6 +35,8 @@ const UserProfile: React.FC = () => {
   const [userData, setUserData] = useState<UserData | null>(null);
   const [obesityData, setObesityData] = useState<ObesityData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [selectedAction, setSelectedAction] = useState('');
+  const [inputValue, setInputValue] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -52,13 +54,25 @@ const UserProfile: React.FC = () => {
     fetchData();
   }, [id]);
 
-  if (loading) return <div className="flex min-h-screen"><Sidebar /><div className="ml-64 p-6">Učitavanje podataka...</div></div>;
+  const handleSubmit = async () => {
+    if (!id || !selectedAction || !inputValue.trim()) return;
+
+    const ref = doc(db, `${selectedAction}`, id);
+    await setDoc(ref, { value: inputValue, timestamp: new Date().toISOString() });
+    setInputValue('');
+    alert(`${selectedAction.charAt(0).toUpperCase() + selectedAction.slice(1)} sačuvan!`);
+  };
+
+  if (loading) return <div className="min-h-screen">Učitavanje podataka...</div>;
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      <Sidebar />
-      <div className="flex-1 ml-64 p-6 space-y-8">
-        <div className="bg-white p-6 shadow rounded max-w-3xl mx-auto">
+    <div className="min-h-screen bg-gray-50">
+      <div className="fixed top-0 left-0 right-0 z-50">
+        <Sidebar />
+      </div>
+
+      <div className="pt-20 max-w-5xl mx-auto p-6 space-y-8">
+        <div className="bg-white p-6 shadow rounded">
           <h2 className="text-2xl font-bold mb-4">Lični podaci</h2>
           <ul className="space-y-2">
             <li><strong>Ime:</strong> {userData?.ime || '-'}</li>
@@ -72,7 +86,7 @@ const UserProfile: React.FC = () => {
           </ul>
         </div>
 
-        <div className="bg-white p-6 shadow rounded max-w-3xl mx-auto">
+        <div className="bg-white p-6 shadow rounded">
           <h2 className="text-2xl font-bold mb-4">Faktori rizika</h2>
           {obesityData ? (
             <ul className="space-y-2">
@@ -89,6 +103,38 @@ const UserProfile: React.FC = () => {
               <li><strong>Prevoz:</strong> {obesityData.transport}</li>
             </ul>
           ) : <p>Podaci o faktorima rizika nisu pronađeni.</p>}
+        </div>
+
+        <div className="bg-white p-6 shadow rounded space-y-4">
+          <h2 className="text-2xl font-bold">Unos nove informacije</h2>
+          <select
+            className="w-full border p-2 rounded"
+            value={selectedAction}
+            onChange={(e) => setSelectedAction(e.target.value)}
+          >
+            <option value="">Odaberi akciju</option>
+            <option value="diagnoses">Dijagnoza</option>
+            <option value="therapies">Terapija</option>
+            <option value="prescriptions">Recept</option>
+          </select>
+
+          {selectedAction && (
+            <div className="space-y-2">
+              <textarea
+                rows={4}
+                className="w-full border p-2 rounded"
+                placeholder={`Unesi ${selectedAction}...`}
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+              ></textarea>
+              <button
+                onClick={handleSubmit}
+                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              >
+                Spasi
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

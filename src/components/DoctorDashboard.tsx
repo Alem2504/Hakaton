@@ -1,85 +1,91 @@
 import React, { useEffect, useState } from 'react';
+import PatientOverview from '../components/PatientOverviewD';
+import CriticalValues from '../components/CriticalValuesD';
+import Appointments from '../components/AppointmentsD';
+import Statistics from '../components/StatisticsD';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../firebase/firebase.config';
-import Sidebar from '../components/Sidebar';
-import { useNavigate } from 'react-router-dom';
+import NavbarD from "./NavbarD.tsx";
 
-interface User {
+interface Patient {
   id: string;
-  ime?: string;
+  name: string;
+  age: number;
   height?: number;
   weight?: number;
-  profileCompleted?: boolean;
+  bmi?: string;
+  status: string;
+  action: string;
+}
+
+interface Appointment {
+  id: string;
+  patientName: string;
+  type: string;
 }
 
 const DoctorDashboard: React.FC = () => {
-  const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
+  const [patients, setPatients] = useState<Patient[]>([]);
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
 
   useEffect(() => {
-    const fetchUsers = async () => {
+    const fetchPatients = async () => {
       const snapshot = await getDocs(collection(db, 'users'));
-    const data: User[] = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-console.log('FIRESTORE USERS:', data); // 👈 vidi šta stiže
-setUsers(data);
+      const data: Patient[] = snapshot.docs.map(doc => {
+        const d = doc.data();
+        const height = d.height || 0;
+        const weight = d.weight || 0;
+        const bmi = height && weight ? (weight / ((height / 100) ** 2)).toFixed(1) : 'N/A';
 
-
-      setLoading(false);
+        return {
+          id: doc.id,
+          name: d.ime || 'Nepoznato',
+          age: d.birthDate ? calculateAge(d.birthDate) : 0,
+          height,
+          weight,
+          bmi,
+          status: d.profileCompleted ? 'Stable' : 'At Risk',
+          action: d.profileCompleted ? 'Stable' : 'Complete Profile',
+        };
+      });
+      setPatients(data);
     };
 
-    fetchUsers();
+    const fetchAppointments = async () => {
+      const snapshot = await getDocs(collection(db, 'appointments'));
+      const data: Appointment[] = snapshot.docs.map(doc => doc.data() as Appointment);
+      setAppointments(data);
+    };
+
+    fetchPatients();
+    fetchAppointments();
   }, []);
 
-  const calculateBMI = (height?: number, weight?: number): string => {
-    if (!height || !weight) return 'N/A';
-    const heightM = height / 100;
-    return (weight / (heightM * heightM)).toFixed(1);
+  const calculateAge = (birthDate: string): number => {
+    const today = new Date();
+    const birth = new Date(birthDate);
+    let age = today.getFullYear() - birth.getFullYear();
+    const m = today.getMonth() - birth.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
+      age--;
+    }
+    return age;
   };
 
-  if (loading) {
-    return <div className="flex min-h-screen"><Sidebar /><div className="ml-64 p-6">Učitavanje pacijenata...</div></div>;
-  }
-
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      <Sidebar />
-      <div className="flex-1 ml-64 p-6">
-        <h2 className="text-2xl font-bold mb-4">Pacijenti</h2>
-        <div className="overflow-auto">
-          <table className="min-w-full bg-white border border-gray-200">
-            <thead className="bg-gray-100">
-              <tr>
-                <th className="text-left px-4 py-2 border">Ime</th>
-                <th className="text-left px-4 py-2 border">Visina</th>
-                <th className="text-left px-4 py-2 border">Težina</th>
-                <th className="text-left px-4 py-2 border">BMI</th>
-                <th className="text-left px-4 py-2 border">Status</th>
-                <th className="text-left px-4 py-2 border">Akcija</th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.map(user => (
-                <tr key={user.id} className="border-t">
-                  <td className="px-4 py-2 border">{user.ime || 'Nepoznato'}</td>
-                  <td className="px-4 py-2 border">{user.height || '-'}</td>
-                  <td className="px-4 py-2 border">{user.weight || '-'}</td>
-                  <td className="px-4 py-2 border">{calculateBMI(user.height, user.weight)}</td>
-                  <td className="px-4 py-2 border">{user.profileCompleted ? '✔️' : '❌'}</td>
-                  <td className="px-4 py-2 border">
-                    <button
-                      onClick={() => navigate(`/profile-view/${user.id}`)}
-                      className="px-3 py-1 bg-blue-600 text-white rounded"
-                    >
-                      Detalji
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+    <div className="space-y-8">
+       <NavbarD />
+      <h1 className="text-3xl font-bold text-gray-900 p-5">Doctor Overview</h1>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <PatientOverview patients={patients} />
+        <div className="space-y-8">
+          <CriticalValues />
+          <Appointments appointments={appointments} />
         </div>
       </div>
+
+      <Statistics />
     </div>
   );
 };

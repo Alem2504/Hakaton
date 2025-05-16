@@ -8,7 +8,7 @@ import {
   HeartPulse,
   BarChart,
   Activity,
-  Settings,
+  Settings, ThermometerIcon,
 } from 'lucide-react';
 
 interface MenuItem {
@@ -22,10 +22,13 @@ const menuItems: MenuItem[] = [
   { label: 'Uredi profil', route: '/edit-health-form', icon: Edit },
   { label: 'Faktori rizika', route: '/prediction', icon: FileText },
   { label: 'Zdravstveni podaci', route: '/health-data', icon: HeartPulse },
-  { label: 'Predikcija', route: '/predictions', icon: Activity },
+  { label: 'Predikcija', route: '/ai', icon: Activity },
   { label: 'Preporuke', route: '/recommendations', icon: FileText },
-  { label: 'Grafovi', route: '/visuals', icon: BarChart },
-  { label: 'Postavke', route: '/settings', icon: Settings },
+  { label: 'Grafovi', route: '/graph', icon: BarChart },
+  {label: 'Terapije', route: '/therapis', icon: ThermometerIcon},
+  {label: 'Nalazi', route: '/nalazi', icon: ThermometerIcon},
+  {label: 'Dijagnoza', route: '/dijagnoza', icon: ThermometerIcon},
+  { label: 'Logout', route: '/settings', icon: Settings },
 ];
 
 const Sidebar: React.FC = () => (
