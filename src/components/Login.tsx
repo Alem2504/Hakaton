@@ -2,25 +2,38 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Button from './Button';
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../firebase/firebase.config.ts";
+import {auth, db} from "../firebase/firebase.config.ts";
+import {doc, getDoc} from "firebase/firestore";
+
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const navigate = useNavigate();
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      console.log("Logged in:", userCredential.user);
-      navigate("/dashboard"); // ili kamo želiš da ide korisnik
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (err) {
-      console.error("Login error:");
-      alert("Login failed: ");
+ const handleLogin = async (e: React.FormEvent) => {
+  e.preventDefault();
+  try {
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user; // ✅ definisan user
+
+    const userDocRef = doc(db, 'users', user.uid);
+    const userDocSnap = await getDoc(userDocRef);
+    const userData = userDocSnap.data();
+
+    console.log("Prijavljen korisnik:", user.email, "Role:", userData?.role);
+
+    if (userData?.role === 'doctor') {
+      navigate('/doctor-dashboard');
+    } else {
+      navigate('/dashboard');
     }
-  };
+
+  } catch (err) {
+    console.error("Login error:", err);
+    alert("Login failed: " + (err as Error).message);
+  }
+};
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
