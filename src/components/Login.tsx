@@ -1,28 +1,24 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Button from './Button';
-import { login } from '../api/auth'; // 👈 dodaj ovu liniju
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../firebase/firebase.config.ts";
 
-const Login: React.FC = () => {ç
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState<string | null>(null);
+const Login: React.FC = () => {
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
     try {
-      const result = await login(email, password);
-      localStorage.setItem('token', result.access_token);
-      alert('Login successful!');
-      navigate('/hello'); // ili gdje god vodi tvoj korisnik
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError('Unknown error occurred');
-      }
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      console.log("Logged in:", userCredential.user);
+      navigate("/dashboard"); // ili kamo želiš da ide korisnik
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (err) {
+      console.error("Login error:");
+      alert("Login failed: ");
     }
   };
 
@@ -45,10 +41,8 @@ const Login: React.FC = () => {ç
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-          <form className="space-y-6" onSubmit={handleSubmit}>
-            {error && (
-              <div className="text-red-600 text-sm text-center">{error}</div>
-            )}
+          <form className="space-y-6" onSubmit={handleLogin}>
+
 
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
@@ -59,7 +53,6 @@ const Login: React.FC = () => {ç
                   id="email"
                   name="email"
                   type="email"
-                  autoComplete="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -77,7 +70,6 @@ const Login: React.FC = () => {ç
                   id="password"
                   name="password"
                   type="password"
-                  autoComplete="current-password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}

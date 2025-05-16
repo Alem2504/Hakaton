@@ -1,26 +1,39 @@
 import React, { useEffect, useState } from "react";
+import { onAuthStateChanged } from "firebase/auth";
+import { getDoc, doc } from "firebase/firestore";
+import { auth, db } from "../firebase/firebase.config";
 
-const Hello: React.FC = () => {
-  const [message, setMessage] = useState("Loading...");
+const AuthChecker: React.FC = () => {
+  const [ime, setIme] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch("http://localhost:8000/hello", {
-      method: "GET",
-      credentials: "include", // 🔑 required to send the cookie
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error("Not authenticated");
-        return res.text();
-      })
-      .then((text) => setMessage(text))
-      .catch(() => setMessage("You are not logged in"));
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        const userDocRef = doc(db, "users", user.uid);
+        const userDocSnap = await getDoc(userDocRef);
+
+        if (userDocSnap.exists()) {
+          const userData = userDocSnap.data();
+          setIme(userData.ime); // Postavi ime iz Firestore-a
+          console.log("✅ Prijavljeni korisnik:", userData.ime);
+        } else {
+          console.log("📂 Nema podataka u Firestore-u.");
+        }
+      } else {
+        console.log("❌ Niko nije prijavljen.");
+        setIme(null);
+      }
+    });
+
+    return () => unsubscribe();
   }, []);
 
   return (
-    <div className="flex items-center justify-center h-screen text-2xl font-bold">
-      {message}
+    <div>
+      <h2>Provjera autentikacije u konzoli 🔍</h2>
+      {ime && <p>👤 Dobrodošao, {ime}!</p>}
     </div>
   );
 };
 
-export default Hello;
+export default AuthChecker;

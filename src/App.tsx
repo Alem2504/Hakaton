@@ -10,6 +10,7 @@ import Register from "./components/Register.tsx";
 import Login from "./components/Login.tsx";
 import Dashboard from "./components/Dashboard.tsx";
 import Hello from "./components/Hello.tsx";
+import HealthForm from "./components/HealthForm.tsx";
 
 // For implementing animation on scroll
 const observeElements = () => {
@@ -50,6 +51,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/hello" element={<Hello />} />
+        <Route path="/health-form" element={<HealthForm />} />
           <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/" element={
           <div className="min-h-screen bg-white">
