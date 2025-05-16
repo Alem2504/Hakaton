@@ -13,6 +13,8 @@ import Hello from "./components/Hello.tsx";
 import HealthForm from "./components/HealthForm.tsx";
 import HealthData from "./components/HealthData.tsx";
 import EditHealthForm from "./components/EditHealthForm.tsx";
+import ObesityForm from "./components/ObesityForm.tsx";
+import Profile from "./components/Profile.tsx";
 
 // For implementing animation on scroll
 const observeElements = () => {
@@ -53,7 +55,9 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/hello" element={<Hello />} />
+        <Route path="/profile-view" element={<Profile />} />
         <Route path="/health-form" element={<HealthForm />} />
+         <Route path="/prediction" element={<ObesityForm />} />
         <Route path="/edit-health-form" element={<EditHealthForm />}/>
         <Route path="health-data" element={<HealthData />} />
           <Route path="/dashboard" element={<Dashboard />} />

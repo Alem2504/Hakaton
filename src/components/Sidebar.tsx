@@ -2,11 +2,12 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import {
-  Brain,
-  Utensils,
-  Timer,
-  Pill,
-  PlayCircle,
+  User,
+  FileText,
+  Edit,
+  HeartPulse,
+  BarChart,
+  Activity,
   Settings,
 } from 'lucide-react';
 
@@ -17,12 +18,13 @@ interface MenuItem {
 }
 
 const menuItems: MenuItem[] = [
-  { label: 'Profil', route: '/profile', icon: Brain },
-  { label: 'Zdravstveni podaci', route: '/health-data', icon: Utensils },
-  { label: 'Uredi podatke', route: '/edit-health-form', icon: Timer },
-  { label: 'Preporuke', route: '/recommendations', icon: Pill },
-  { label: 'Grafovi', route: '/visuals', icon: PlayCircle },
-  { label: 'Simulacije', route: '/simulations', icon: PlayCircle },
+  { label: 'Profil', route: '/profile-view', icon: User },
+  { label: 'Uredi profil', route: '/edit-health-form', icon: Edit },
+  { label: 'Faktori rizika', route: '/prediction', icon: FileText },
+  { label: 'Zdravstveni podaci', route: '/health-data', icon: HeartPulse },
+  { label: 'Predikcija', route: '/predictions', icon: Activity },
+  { label: 'Preporuke', route: '/recommendations', icon: FileText },
+  { label: 'Grafovi', route: '/visuals', icon: BarChart },
   { label: 'Postavke', route: '/settings', icon: Settings },
 ];
 
